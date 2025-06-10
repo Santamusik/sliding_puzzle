@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>슬라이드 퍼즐 게임</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-section">
+        <h1>슬라이드 퍼즐 게임</h1>
+        <button id="helpBtn" class="help-btn">❓ 도움말</button>
+      </div>
+
+      <!-- 게임 설정 패널 -->
+      <div class="settings-panel" id="settingsPanel">
+        <div class="setting-group">
+          <label for="imageUpload">이미지 업로드:</label>
+          <input type="file" id="imageUpload" accept="image/*" />
+        </div>
+
+        <div class="setting-group">
+          <label>퍼즐 크기:</label>
+          <div class="size-buttons">
+            <button class="size-btn active" data-size="3">3x3</button>
+            <button class="size-btn" data-size="4">4x4</button>
+          </div>
+        </div>
+
+        <button id="startGame" class="start-btn" disabled>게임 시작</button>
+      </div>
+
+      <!-- 게임 화면 -->
+      <div class="game-screen" id="gameScreen" style="display: none">
+        <div class="game-header">
+          <div class="timer-section">
+            <span>시간: </span>
+            <span id="timer">00:00</span>
+          </div>
+          <div class="moves-section">
+            <span>이동 횟수: </span>
+            <span id="moves">0</span>
+          </div>
+          <button id="backToMenu" class="back-btn">메뉴로 돌아가기</button>
+        </div>
+
+        <div class="puzzle-container">
+          <canvas id="originalImage" class="original-preview"></canvas>
+          <div id="puzzleBoard" class="puzzle-board"></div>
+        </div>
+      </div>
+
+      <!-- 완료 모달 -->
+      <div id="completionModal" class="modal" style="display: none">
+        <div class="modal-content">
+          <h2>🎉 퍼즐 완성!</h2>
+          <div id="completionStats">
+            <p>완료 시간: <span id="finalTime"></span></p>
+            <p>이동 횟수: <span id="finalMoves"></span></p>
+            <p>등급: <span id="grade"></span></p>
+          </div>
+          <div class="modal-buttons">
+            <button id="playAgain">다시 플레이</button>
+            <button id="newGame">새 게임</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 도움말 모달 -->
+      <div id="helpModal" class="modal" style="display: none">
+        <div class="modal-content help-modal-content">
+          <div class="modal-header">
+            <h2>🧩 게임 도움말</h2>
+            <button id="closeHelp" class="close-btn">✖</button>
+          </div>
+
+          <div class="help-content">
+            <section class="help-section">
+              <h3>🎮 게임 방법</h3>
+              <ol>
+                <li>
+                  <strong>이미지 업로드:</strong> "이미지 업로드" 버튼을
+                  클릭하여 원하는 사진을 선택하세요
+                </li>
+                <li>
+                  <strong>퍼즐 크기 선택:</strong> 3x3(쉬움) 또는 4x4(어려움)를
+                  선택하세요
+                </li>
+                <li>
+                  <strong>게임 시작:</strong> "게임 시작" 버튼을 클릭하면 퍼즐이
+                  섞여서 시작됩니다
+                </li>
+                <li>
+                  <strong>퍼즐 맞추기:</strong> 빈 공간 옆의 퍼즐 조각을
+                  클릭하여 이동시키세요
+                </li>
+                <li>
+                  <strong>완료:</strong> 모든 조각이 올바른 위치에 오면 게임
+                  완료!
+                </li>
+              </ol>
+            </section>
+
+            <section class="help-section">
+              <h3>🏆 등급 시스템</h3>
+              <div class="grade-info">
+                <div class="grade-item">
+                  <span class="grade-s">S등급</span>
+                  <span>👑 완벽! 매우 빠른 시간과 효율적인 이동</span>
+                </div>
+                <div class="grade-item">
+                  <span class="grade-a">A등급</span>
+                  <span>🌟 훌륭! 빠른 시간과 좋은 이동</span>
+                </div>
+                <div class="grade-item">
+                  <span class="grade-b">B등급</span>
+                  <span>👍 좋음! 준수한 시간과 이동</span>
+                </div>
+                <div class="grade-item">
+                  <span class="grade-c">C등급</span>
+                  <span>😊 보통! 평균적인 완료</span>
+                </div>
+                <div class="grade-item">
+                  <span class="grade-d">D등급</span>
+                  <span>💪 완료! 계속 연습하면 더 좋아져요</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="help-section">
+              <h3>💡 이미지 업로드 팁</h3>
+              <ul>
+                <li>JPG, PNG 등 일반적인 이미지 형식을 지원합니다</li>
+                <li>밝고 선명한 사진이 퍼즐하기 좋습니다</li>
+                <li>사람 얼굴, 동물, 풍경 사진을 추천합니다</li>
+                <li>너무 어둡거나 단조로운 색상의 이미지는 어려울 수 있어요</li>
+              </ul>
+            </section>
+
+            <section class="help-section">
+              <h3>🎯 게임 팁</h3>
+              <ul>
+                <li>
+                  <strong>3x3부터 시작:</strong> 처음에는 3x3로 연습해보세요
+                </li>
+                <li>
+                  <strong>모서리부터:</strong> 가장자리 조각부터 맞춰보세요
+                </li>
+                <li>
+                  <strong>차근차근:</strong> 급하게 하지 말고 천천히
+                  생각해보세요
+                </li>
+                <li>
+                  <strong>원본 보기:</strong> 왼쪽의 원본 이미지를 참고하세요
+                </li>
+                <li><strong>인내심:</strong> 처음에는 어려워도 점점 늘어요!</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
